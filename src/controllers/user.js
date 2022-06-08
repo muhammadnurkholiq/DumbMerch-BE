@@ -126,16 +126,6 @@ exports.updateUser = async (req, res) => {
       },
     });
 
-    // unlink file
-    if (req.file) {
-      cloudinary.v2.uploader.destroy(
-        "DumbMerch/Profile/" + beforeUpdate.image,
-        function (error, result) {
-          console.log(result, error);
-        }
-      );
-    }
-
     // user update
     await user.update(data2, {
       where: {
@@ -203,16 +193,6 @@ exports.deleteUser = async (req, res) => {
       id,
     },
   });
-
-  // unlink file
-  if (req.file) {
-    cloudinary.v2.uploader.destroy(
-      "DumbMerch/Profile/" + data.image,
-      function (error, result) {
-        console.log(result, error);
-      }
-    );
-  }
 
   try {
     await user.destroy({

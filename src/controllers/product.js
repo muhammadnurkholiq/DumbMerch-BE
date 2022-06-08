@@ -269,16 +269,6 @@ exports.updateProduct = async (req, res) => {
       },
     });
 
-    // unlink file
-    if (req.file) {
-      cloudinary.v2.uploader.destroy(
-        "DumbMerch/Product/" + beforeUpdate.image,
-        function (error, result) {
-          console.log(result, error);
-        }
-      );
-    }
-
     // find category
     const categoryData = await category.findOne({
       where: {
@@ -372,14 +362,6 @@ exports.deleteProduct = async (req, res) => {
         id,
       },
     });
-
-    // unlink file
-    cloudinary.v2.uploader.destroy(
-      "DumbMerch/Product/" + data.image,
-      function (error, result) {
-        console.log(result, error);
-      }
-    );
 
     await product.destroy({
       where: {
