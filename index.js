@@ -28,7 +28,7 @@ app.use("/uploads", express.static("uploads/"));
 app.use("/uploads/product", express.static("uploads/product"));
 app.use("/uploads/profile", express.static("uploads/profile"));
 
-app.get("/", (req, res) => {
+app.get("/", function (req, res) {
   res.send("DumbMerch Back End Runnin on Heroku");
 });
 
