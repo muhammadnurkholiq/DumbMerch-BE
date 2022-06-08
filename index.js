@@ -9,6 +9,8 @@ const { Server } = require("socket.io");
 
 const app = express();
 
+app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -21,7 +23,6 @@ require("./src/socket")(io);
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use(cors());
 app.use("/api/v1/", router);
 
 app.use("/uploads", express.static("uploads/"));
