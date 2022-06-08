@@ -2,7 +2,7 @@
 const { user, profile } = require("../../models");
 
 // cloudinary
-const cloudinary = require("../utils/cloudinary");
+const cloudinary = require("../utils/Cloudinary");
 
 // get all user
 exports.getUsers = async (req, res) => {
