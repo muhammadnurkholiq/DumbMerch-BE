@@ -54,7 +54,7 @@ exports.getTransactions = async (req, res) => {
         ...item,
         product: {
           ...item.product,
-          image: process.env.PATH_FILE + "product/" + item.product.image,
+          image: process.env.PATH_FILE_PRODUCT + item.product.image,
         },
       };
     });
