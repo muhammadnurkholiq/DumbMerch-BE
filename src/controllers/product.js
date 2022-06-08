@@ -259,16 +259,6 @@ exports.updateProduct = async (req, res) => {
   };
 
   try {
-    // find one before update
-    const beforeUpdate = await product.findOne({
-      where: {
-        id,
-      },
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "idUser"],
-      },
-    });
-
     // find category
     const categoryData = await category.findOne({
       where: {

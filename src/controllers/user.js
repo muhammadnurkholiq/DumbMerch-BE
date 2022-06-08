@@ -116,16 +116,6 @@ exports.updateUser = async (req, res) => {
 
   // core
   try {
-    // find one before update
-    const beforeUpdate = await profile.findOne({
-      where: {
-        idUser: id,
-      },
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "idUser"],
-      },
-    });
-
     // user update
     await user.update(data2, {
       where: {
@@ -187,12 +177,6 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   // get id from user
   const { id } = req.user;
-
-  const data = await profile.findOne({
-    where: {
-      id,
-    },
-  });
 
   try {
     await user.destroy({
