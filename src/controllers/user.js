@@ -123,7 +123,7 @@ exports.updateUser = async (req, res) => {
       },
     });
 
-    if (req.file) {
+    if (data1.image !== null || data1.image === "null") {
       await profile.update(
         { ...data1, image: result.public_id },
         {
