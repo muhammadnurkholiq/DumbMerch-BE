@@ -10,14 +10,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      // profile model
-      user.hasOne(models.profile, {
-        as: "profile",
-        foreignKey: {
-          name: "idUser",
-        },
-      });
-
       // product model
       user.hasMany(models.product, {
         as: "products",
@@ -57,11 +49,16 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+
   user.init(
     {
       name: DataTypes.STRING,
       email: DataTypes.STRING,
       password: DataTypes.STRING,
+      image: DataTypes.STRING,
+      phone: DataTypes.STRING,
+      gender: DataTypes.STRING,
+      address: DataTypes.STRING,
       status: DataTypes.STRING,
     },
     {

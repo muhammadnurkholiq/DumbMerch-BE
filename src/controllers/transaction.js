@@ -1,4 +1,4 @@
-const { user, transaction, product, profile } = require("../../models");
+const { user, transaction, product } = require("../../models");
 
 // Import midtransClient here ...
 const midtransClient = require("midtrans-client");
@@ -54,13 +54,13 @@ exports.getTransactions = async (req, res) => {
         ...item,
         product: {
           ...item.product,
-          image: process.env.PATH_FILE_PRODUCT + item.product.image,
+          image: process.env.PATH_FILE + item.product.image,
         },
       };
     });
 
     res.send({
-      status: "success",
+      status: "Success",
       data,
     });
   } catch (error) {
@@ -89,13 +89,6 @@ exports.addTransaction = async (req, res) => {
 
     // Get buyer data here ...
     const buyerData = await user.findOne({
-      include: {
-        model: profile,
-        as: "profile",
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "idUser"],
-        },
-      },
       where: {
         id: newData.idBuyer,
       },
@@ -123,7 +116,7 @@ exports.addTransaction = async (req, res) => {
       customer_details: {
         full_name: buyerData?.name,
         email: buyerData?.email,
-        phone: buyerData?.profile?.phone,
+        phone: buyerData?.phone,
       },
     };
 

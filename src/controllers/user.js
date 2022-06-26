@@ -1,5 +1,5 @@
 // import model
-const { user, profile } = require("../../models");
+const { user } = require("../../models");
 
 // cloudinary
 const cloudinary = require("../utils/Cloudinary");
@@ -8,26 +8,25 @@ const cloudinary = require("../utils/Cloudinary");
 exports.getUsers = async (req, res) => {
   try {
     // find all
-    const userData = await user.findAll({
-      include: {
-        model: profile,
-        as: "profile",
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "id", "idUser"],
-        },
-      },
+    let userData = await user.findAll({
       attributes: {
         exclude: ["createdAt", "updatedAt", "password"],
       },
     });
 
+    userData = JSON.parse(JSON.stringify(userData));
+
+    userData = userData.map((item) => {
+      return {
+        ...item,
+        image: process.env.PATH_FILE + item.image,
+      };
+    });
     // response
     res.status(200).send({
       status: "Success",
       message: "User data found",
-      data: {
-        user: userData,
-      },
+      data: userData,
     });
   } catch (error) {
     res.status(500).send({
@@ -43,46 +42,27 @@ exports.getUser = async (req, res) => {
   const { id } = req.user;
   try {
     // find one
-    const dataUser = await user.findOne({
+    let userData = await user.findOne({
       where: {
         id,
-      },
-      include: {
-        model: profile,
-        as: "profile",
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "id", "idUser"],
-        },
       },
       attributes: {
         exclude: ["createdAt", "updatedAt", "password"],
       },
     });
 
-    // if not found data
-    if (dataUser == null) {
-      return res.send({
-        status: "Success",
-        message: "User data not found",
-      });
-    }
+    userData = JSON.parse(JSON.stringify(userData));
 
-    const data = {
-      image: process.env.PATH_FILE_PROFILE + dataUser.profile.image,
-      name: dataUser.name,
-      email: dataUser.email,
-      phone: dataUser.profile.phone,
-      gender: dataUser.profile.gender,
-      address: dataUser.profile.address,
+    userData = {
+      ...userData,
+      image: process.env.PATH_FILE + userData.image,
     };
 
     // response
     res.status(200).send({
       status: "Success",
       message: "User data found",
-      data: {
-        user: data,
-      },
+      data: userData,
     });
   } catch (error) {
     res.status(500).send({
@@ -99,13 +79,6 @@ exports.updateUser = async (req, res) => {
   // data input
   const data1 = req.body;
 
-  // cloudinary
-  const result = await cloudinary.uploader.upload(req.file.path, {
-    folder: "DumbMerch/Profile",
-    use_filename: true,
-    unique_filename: false,
-  });
-
   const data2 = {
     name: req.body.name,
     email: req.body.email,
@@ -116,54 +89,65 @@ exports.updateUser = async (req, res) => {
 
   // core
   try {
-    // user update
-    await user.update(data2, {
-      where: {
-        id,
-      },
-    });
+    if (req.file) {
+      // get data before update
+      const beforeUpdate = await user.findOne({
+        where: {
+          id,
+        },
+      });
 
-    if (data1.image !== null || data1.image === "null") {
-      await profile.update(
+      // delete file to cloudinary
+      cloudinary.uploader.destroy(beforeUpdate.image);
+
+      // cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "DumbMerch/Profile",
+        use_filename: true,
+        unique_filename: false,
+      });
+
+      // update profile
+      await user.update(
         { ...data1, image: result.public_id },
         {
           where: {
-            idUser: id,
+            id,
           },
         }
       );
+    } else {
+      await user.update(data2, {
+        where: {
+          id,
+        },
+      });
     }
-
-    await profile.update(data2, {
-      where: {
-        idUser: id,
-      },
-    });
 
     // find one
     const dataUser = await user.findOne({
       where: {
         id: id,
       },
-      include: {
-        model: profile,
-        as: "profile",
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "idUser", "id"],
-        },
-      },
       attributes: {
         exclude: ["createdAt", "updatedAt", "password"],
       },
     });
 
+    const data = {
+      name: dataUser.name,
+      email: dataUser.email,
+      image: process.env.PATH_FILE + dataUser.image,
+      phone: dataUser.phone,
+      gender: dataUser.gender,
+      address: dataUser.address,
+    };
+
     // response
     res.status(200).send({
       status: "Success",
       message: "User data updated successfully",
-      data: {
-        user: dataUser,
-      },
+      data: data,
     });
   } catch (error) {
     res.status(500).send({
@@ -179,6 +163,16 @@ exports.deleteUser = async (req, res) => {
   const { id } = req.user;
 
   try {
+    // get data before update
+    const beforeUpdate = await user.findOne({
+      where: {
+        id,
+      },
+    });
+
+    // delete file to cloudinary
+    cloudinary.uploader.destroy(beforeUpdate.image);
+
     await user.destroy({
       where: {
         id,

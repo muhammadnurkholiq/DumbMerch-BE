@@ -18,14 +18,15 @@ module.exports = {
         email: "admin@admin.com",
         password:
           "$2b$10$aqojTWpfGODFH3Q2M5i2MuOC3ez8FLwj4Aw4FMoRA89oTwFP9NMkG",
+        image: "DumbMerch/Profile/dumbmerch_rz6jgv.png",
         status: "admin",
       },
-    ]);
-
-    await queryInterface.bulkInsert("profiles", [
       {
-        idUser: 1,
-        image: "http://localhost:5000/uploads/profile/dumbmerch.png",
+        name: "user1",
+        email: "user1@gmail.com",
+        password:
+          "$2b$10$aqojTWpfGODFH3Q2M5i2MuOC3ez8FLwj4Aw4FMoRA89oTwFP9NMkG",
+        status: "customer",
       },
     ]);
   },

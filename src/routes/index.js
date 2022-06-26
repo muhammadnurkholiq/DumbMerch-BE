@@ -25,15 +25,6 @@ const {
   deleteProduct,
 } = require("../controllers/product");
 
-// category
-const {
-  addCategory,
-  getCategories,
-  getCategory,
-  updateCategory,
-  deleteCategory,
-} = require("../controllers/category");
-
 // transaction
 const {
   getTransactions,
@@ -51,13 +42,6 @@ router.get("/users", getUsers);
 router.get("/user", auth, getUser);
 router.patch("/user", auth, uploadProfile("image"), updateUser);
 router.delete("/user", auth, deleteUser);
-
-// category - router
-router.post("/categories", addCategory);
-router.get("/categories", getCategories);
-router.get("/categories/:id", getCategory);
-router.put("/categories/:id", updateCategory);
-router.delete("/categories/:id", deleteCategory);
 
 // product - router
 router.post("/products", auth, uploadProduct("image"), addProduct);

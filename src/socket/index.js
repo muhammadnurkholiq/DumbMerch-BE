@@ -1,4 +1,4 @@
-const { chat, user, profile } = require("../../models");
+const { chat, user } = require("../../models");
 
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
@@ -25,16 +25,7 @@ const socketIo = (io) => {
     // load admin
     socket.on("load admin contact", async () => {
       try {
-        const adminContact = await user.findOne({
-          include: [
-            {
-              model: profile,
-              as: "profile",
-              attributes: {
-                exclude: ["createdAt", "updatedAt"],
-              },
-            },
-          ],
+        let adminContact = await user.findOne({
           where: {
             status: "admin",
           },
@@ -43,6 +34,11 @@ const socketIo = (io) => {
           },
         });
 
+        adminContact = JSON.parse(JSON.stringify(adminContact));
+        adminContact = {
+          ...adminContact,
+          image: process.env.PATH_FILE + adminContact.image,
+        };
         socket.emit("admin contact", adminContact);
       } catch (err) {
         console.log(err);
@@ -54,13 +50,6 @@ const socketIo = (io) => {
       try {
         let customerContacts = await user.findAll({
           include: [
-            {
-              model: profile,
-              as: "profile",
-              attributes: {
-                exclude: ["createdAt", "updatedAt"],
-              },
-            },
             {
               model: chat,
               as: "recipientMessage",
@@ -84,12 +73,7 @@ const socketIo = (io) => {
         customerContacts = JSON.parse(JSON.stringify(customerContacts));
         customerContacts = customerContacts.map((item) => ({
           ...item,
-          profile: {
-            ...item.profile,
-            image: item.profile?.image
-              ? process.env.PATH_FILE + "profile/" + item.profile?.image
-              : null,
-          },
+          image: process.env.PATH_FILE + item.image,
         }));
 
         socket.emit("customer contacts", customerContacts);
